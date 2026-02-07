@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Code Review System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  box-sizing:border-box;
+  font-family:'Roboto',sans-serif;
+}
+
+body{
+  margin:0;
+  height:100vh;
+  background:#f2f5f9;
+}
+
+/* Top Bar */
+.topbar{
+  height:60px;
+  background:#1a73e8;
+  color:white;
+  display:flex;
+  align-items:center;
+  padding:0 25px;
+  font-size:20px;
+  font-weight:500;
+}
+
+/* Layout */
+.container{
+  display:flex;
+  height:calc(100vh - 60px);
+}
+
+/* Left */
+.left{
+  width:50%;
+  background:#ffffff;
+  padding:20px;
+  border-right:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
+}
+
+.left h3{
+  margin:0 0 10px;
+  color:#1a73e8;
+}
+
+textarea{
+  flex:1;
+  width:100%;
+  border:1px solid #ccc;
+  border-radius:5px;
+  padding:10px;
+  font-family:Consolas,monospace;
+  font-size:14px;
+  resize:none;
+}
+
+/* Right */
+.right{
+  width:50%;
+  background:#fafafa;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+}
+
+.right h3{
+  margin:0 0 10px;
+  color:#333;
+}
+
+pre{
+  flex:1;
+  background:white;
+  border:1px solid #ddd;
+  border-radius:5px;
+  padding:12px;
+  overflow:auto;
+  font-size:13px;
+}
+
+/* Button Area */
+.actions{
+  text-align:center;
+  padding:15px;
+  background:white;
+  border-top:1px solid #ddd;
+}
+
+button{
+  background:#1a73e8;
+  color:white;
+  border:none;
+  padding:10px 30px;
+  font-size:15px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#155ec2;
+}
+
+/* Status */
+.status{
+  text-align:center;
+  font-size:13px;
+  color:#1a73e8;
+  margin-top:8px;
+  display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  AI Code Review Platform
+</div>
+
+<!-- Main -->
+<div class="container">
+
+  <!-- Left -->
+  <div class="left">
+
+    <h3>Source Code</h3>
+
+    <textarea id="code"
+      placeholder="Paste your code here..."></textarea>
+
+  </div>
+
+  <!-- Right -->
+  <div class="right">
+
+    <h3>Review Output</h3>
+
+    <pre id="output">No review generated.</pre>
+
+  </div>
+
+</div>
+
+<!-- Button -->
+<div class="actions">
+
+  <button onclick="review()">Run Analysis</button>
+
+  <div class="status" id="status">
+    Analyzing code...
+  </div>
+
+</div>
+
+<script>
+
+async function review(){
+
+  const code=document.getElementById("code").value;
+  const out=document.getElementById("output");
+  const status=document.getElementById("status");
+
+  if(code.trim()===""){
+    alert("Paste code first!");
+    return;
+  }
+
+  status.style.display="block";
+  out.innerText="";
+
+  try{
+
+    const res=await fetch("/review",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({code})
+    });
+
+    const data=await res.json();
+
+    out.innerText=data.review;
+
+  }catch{
+
+    out.innerText="❌ Backend not responding";
+
+  }
+
+  status.style.display="none";
+}
+
+</script>
+
+</body>
+</html>
